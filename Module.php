@@ -1,18 +1,34 @@
 <?php
 namespace EdpModuleLayouts;
 
-class Module
-{
+class Module {
+
     public function onBootstrap($e)
     {
         $e->getApplication()->getEventManager()->getSharedManager()->attach('Zend\Mvc\Controller\AbstractController', 'dispatch', function($e) {
-            $controller      = $e->getTarget();
-            $controllerClass = get_class($controller);
-            $moduleNamespace = substr($controllerClass, 0, strpos($controllerClass, '\\'));
-            $config          = $e->getApplication()->getServiceManager()->get('config');
-            if (isset($config['module_layouts'][$moduleNamespace])) {
-                $controller->layout($config['module_layouts'][$moduleNamespace]);
+
+            $routeMatchParams = $e->getRouteMatch()->getParams();
+            
+            $moduleName = substr($routeMatchParams['__NAMESPACE__'], 0, strpos($routeMatchParams['__NAMESPACE__'], '\\'));
+            $controllerName = str_replace('\\Controller\\', '/', $routeMatchParams['controller']);            
+            $actionName = $routeMatchParams['action'];
+                     
+            $config = $e->getApplication()->getServiceManager()->get('config');
+            $controller = $e->getTarget();
+
+            if (isset($config['module_layouts'][$moduleName]))
+            {
+                $controller->layout($config['module_layouts'][$moduleName]);   
             }
+            if (isset($config['controller_layouts'][$controllerName]))
+            {
+                $controller->layout($config['controller_layouts'][$controllerName]);
+            }
+            if (isset($config['action_layouts'][$controllerName . '/' . $actionName]))
+            {
+                $controller->layout($config['action_layouts'][$controllerName . '/' . $actionName]);
+            }            
+            
         }, 100);
     }
 }
