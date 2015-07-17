@@ -8,6 +8,11 @@ class Module {
         $e->getApplication()->getEventManager()->getSharedManager()->attach('Zend\Mvc\Controller\AbstractController', 'dispatch', function($e) {
 
             $routeMatchParams = $e->getRouteMatch()->getParams();
+
+            // Avoid errors on redirections, forwards, etc
+            if (!isset($routeMatchParams['__NAMESPACE__']) ||!isset($routeMatchParams['controller']) ||!isset($routeMatchParams['action'])) {
+                return;
+            }
             
             $moduleName = substr($routeMatchParams['__NAMESPACE__'], 0, strpos($routeMatchParams['__NAMESPACE__'], '\\'));
             $controllerName = str_replace('\\Controller\\', '/', $routeMatchParams['controller']);            

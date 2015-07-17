@@ -13,6 +13,11 @@ Version 1.1
 
 Now this module permits setup by config the different layouts for Module, Controllers an Action directly in the module.config.php file using an array config.
 
+Version 1.11
+-----------
+
+Bugfix: Avoid errors on redirections, forwards, etc if not exist Module, Controller or Action on Route.
+
 Usage
 -----
 
